@@ -19,10 +19,16 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAdmin: user?.role === 'admin', isHR: user?.role === 'hr' || user?.role === 'admin' }}>
+    <AuthContext.Provider value={{ 
+      user, login, logout, 
+      isAdmin: user?.role === 'admin', 
+      isHR: user?.role === 'hr' || user?.role === 'admin' 
+    }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
 export const useAuth = () => useContext(AuthContext);
+
+export default AuthContext;

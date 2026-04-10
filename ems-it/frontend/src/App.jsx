@@ -1,14 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
-import LoginPage from './pages/LoginPage';
+import LoginPage from './pages/facelogin';
 import HomePage from './pages/homepage';
 import Dashboard from './pages/Dashboard';
 import Employees from './pages/Employees';
 import Departments from './pages/Departments';
 import Payroll from './pages/Payroll';
 import Leave from './pages/Leave';
-import Attendance from './pages/Attendance';
+import AdminAttendance from './pages/Attendance';        // ✅ Admin: list view
+import FaceAttendance from './pages/faceAttendance';     // ✅ Employee: face scan
 import Performance from './pages/Performance';
 import Projects from './pages/Projects';
 import Assets from './pages/Assets';
@@ -24,6 +25,15 @@ import Feedback from './pages/feedback';
 const PrivateRoute = ({ children }) => {
   const { user } = useAuth();
   return user ? children : <Navigate to="/login" replace />;
+};
+
+// ✅ Role based attendance — admin/hr → list view, employee/manager → face scan
+const AttendancePage = () => {
+  const { user } = useAuth();
+  if (user?.role === 'admin' || user?.role === 'hr') {
+    return <AdminAttendance />;
+  }
+  return <FaceAttendance />;
 };
 
 export default function App() {
@@ -45,7 +55,7 @@ export default function App() {
             <Route path="roles" element={<Roles />} />
             <Route path="payroll" element={<Payroll />} />
             <Route path="leave" element={<Leave />} />
-            <Route path="attendance" element={<Attendance />} />
+            <Route path="attendance" element={<AttendancePage />} />  {/* ✅ Role based */}
             <Route path="performance" element={<Performance />} />
             <Route path="projects" element={<Projects />} />
             <Route path="assets" element={<Assets />} />
