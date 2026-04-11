@@ -2,9 +2,9 @@ import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
 import { PageHeader, Btn, Badge, Modal, Input, Select, Table, Loader, statusColor } from '../components/UI';
 import api from '../api';
-import FaceScanner from '../components/facescanner'; // ✅ NEW
+import FaceScanner from '../components/facescanner';
 
-const EMPTY = { name:'', email:'', phone:'', designation:'', salary:'', department:'', role:'employee', status:'active', skills:'', address:'', bloodGroup:'', joiningDate:'' };
+const EMPTY = { name:'', email:'', phone:'', designation:'', salary:'', department:'', role:'employee', status:'active', skills:'', address:'', bloodGroup:'', joiningDate:'', password:'' };
 
 export default function Employees() {
   const [list, setList] = useState([]);
@@ -18,8 +18,8 @@ export default function Employees() {
   const [photo, setPhoto] = useState(null);
   const [search, setSearch] = useState('');
   const [err, setErr] = useState('');
+  const [showPass, setShowPass] = useState(false);
 
-  // ✅ NEW — Face Register states
   const [showFace, setShowFace] = useState(false);
   const [faceEmp, setFaceEmp] = useState(null);
   const [faceMsg, setFaceMsg] = useState('');
@@ -37,9 +37,12 @@ export default function Employees() {
   const save = async () => {
     setErr('');
     if (!form.name || !form.email) return setErr('Name and Email required');
+    if (!editId && !form.password) return setErr('Password is required for new employee');
     try {
       const fd = new FormData();
-      Object.keys(form).forEach(k => form[k] && fd.append(k, form[k]));
+      Object.keys(form).forEach(k => {
+        if (form[k]) fd.append(k, form[k]);
+      });
       if (photo) fd.append('photo', photo);
       const result = editId
         ? await api.putForm(`/employees/${editId}`, fd)
@@ -63,11 +66,11 @@ export default function Employees() {
       status: emp.status || 'active', skills: (emp.skills || []).join(', '),
       address: emp.address || '', bloodGroup: emp.bloodGroup || '',
       joiningDate: emp.joiningDate ? emp.joiningDate.split('T')[0] : '',
+      password: '',
     });
     setEditId(emp._id); setShow(true); setErr('');
   };
 
-  // ✅ NEW — Face register handler
   const openFaceRegister = (emp) => {
     setFaceEmp(emp);
     setFaceMsg('');
@@ -97,7 +100,7 @@ export default function Employees() {
   const cols = [
     { key: 'photo', label: '', render: r => (
       <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#ede9fe', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#6366f1' }}>
-        {r.photo ? <img src={`http://https://ems-it-complete-2.onrender.com:5000${r.photo}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : r.name?.[0]}
+        {r.photo ? <img src={`https://ems-it-complete-2.onrender.com${r.photo}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : r.name?.[0]}
       </div>
     )},
     { key: 'employeeCode', label: 'Code' },
@@ -107,7 +110,6 @@ export default function Employees() {
     { key: 'department', label: 'Department', render: r => r.department?.name || '—' },
     { key: 'salary', label: 'Salary', render: r => r.salary ? '₹' + Number(r.salary).toLocaleString() : '—' },
     { key: 'status', label: 'Status', render: r => <Badge label={r.status} color={statusColor(r.status)} /> },
-    // ✅ NEW — faceDescriptor இருந்தா green badge
     { key: 'face', label: 'Face', render: r => (
       <Badge
         label={r.faceDescriptor ? '✅ Registered' : '❌ Not Set'}
@@ -118,7 +120,6 @@ export default function Employees() {
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {isAdmin && <Btn size="sm" variant="outline" onClick={() => openEdit(r)}>Edit</Btn>}
         {isAdmin && <Btn size="sm" variant="danger" onClick={() => del(r._id)}>Delete</Btn>}
-        {/* ✅ NEW — Face Register Button */}
         {isAdmin && (
           <Btn size="sm" variant="outline" onClick={() => openFaceRegister(r)}>
             📷 {r.faceDescriptor ? 'Re-Register' : 'Register Face'}
@@ -142,12 +143,12 @@ export default function Employees() {
         {loading ? <Loader /> : <Table columns={cols} data={filtered} emptyMsg="No employees found" />}
       </div>
 
-      {/* Existing Add/Edit Modal */}
+      {/* Add/Edit Modal */}
       <Modal show={show} onClose={() => setShow(false)} title={editId ? 'Edit Employee' : 'Add Employee'} width={620}>
         {err && <div style={{ background: '#fef2f2', color: '#dc2626', padding: '8px 12px', borderRadius: 8, fontSize: 13, marginBottom: 12 }}>⚠️ {err}</div>}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-          <Input label="Full Name" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="John Doe" />
-          <Input label="Email" required type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="john@company.com" />
+          <Input label="Full Name *" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="John Doe" />
+          <Input label="Email *" required type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="john@company.com" />
           <Input label="Phone" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+91 98765 43210" />
           <Input label="Designation" value={form.designation} onChange={e => setForm({...form, designation: e.target.value})} placeholder="Software Engineer" />
           <Select label="Department" value={form.department} onChange={e => setForm({...form, department: e.target.value})}
@@ -165,6 +166,46 @@ export default function Employees() {
           <div style={{ gridColumn: 'span 2' }}>
             <Input label="Address" value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="123 Main St, Chennai" />
           </div>
+
+          {/* Password Field */}
+          <div style={{ gridColumn: 'span 2' }}>
+            <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 5 }}>
+              {editId ? '🔑 New Password (விட்டால் மாறாது)' : '🔑 Password *'}
+            </label>
+            <div style={{ position: 'relative' }}>
+              <input
+                type={showPass ? 'text' : 'password'}
+                value={form.password}
+                onChange={e => setForm({...form, password: e.target.value})}
+                placeholder={editId ? 'புதிய password மட்டும் type பண்ணுங்க' : 'Employee login password'}
+                style={{
+                  width: '100%', boxSizing: 'border-box',
+                  padding: '8px 40px 8px 12px',
+                  border: '1px solid #e2e8f0', borderRadius: 8,
+                  fontSize: 13, outline: 'none',
+                  background: '#f8fafc'
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPass(!showPass)}
+                style={{
+                  position: 'absolute', right: 10, top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none', border: 'none',
+                  cursor: 'pointer', fontSize: 16, color: '#64748b'
+                }}
+              >
+                {showPass ? '🙈' : '👁️'}
+              </button>
+            </div>
+            {!editId && (
+              <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>
+                இந்த password-லயே employee login பண்ணலாம்
+              </p>
+            )}
+          </div>
+
           <div style={{ gridColumn: 'span 2' }}>
             <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 5 }}>Profile Photo</label>
             <input type="file" accept="image/*" onChange={e => setPhoto(e.target.files[0])}
@@ -177,7 +218,7 @@ export default function Employees() {
         </div>
       </Modal>
 
-      {/* ✅ NEW — Face Register Modal */}
+      {/* Face Register Modal */}
       <Modal show={showFace} onClose={() => setShowFace(false)} title={`📷 Register Face — ${faceEmp?.name}`} width={420}>
         <div style={{ textAlign: 'center' }}>
           <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>
@@ -202,7 +243,6 @@ export default function Employees() {
           )}
         </div>
       </Modal>
-
     </div>
   );
 }
