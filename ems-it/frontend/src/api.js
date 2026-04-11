@@ -1,6 +1,6 @@
 const BASE = import.meta.env.VITE_API_URL 
   ? `${import.meta.env.VITE_API_URL}/api` 
-  : 'http://https://ems-it-complete-2.onrender.com:5000/api';
+  : 'https://ems-it-complete-2.onrender.com/api';
 
 const getHeaders = (isForm = false) => {
   const token = localStorage.getItem('token');
