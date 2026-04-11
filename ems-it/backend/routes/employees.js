@@ -43,13 +43,11 @@ router.post('/', auth, adminOnly, upload.single('photo'), async (req, res) => {
     const { password, ...empData } = req.body;
     if (req.file) empData.photo = `/uploads/${req.file.filename}`;
 
-    // Create employee
     const emp = await Employee.create(empData);
 
-    // Create user account with provided password
     const userPassword = password || 'Welcome@123';
     const hashed = await bcrypt.hash(userPassword, 10);
-    
+
     const existingUser = await User.findOne({ email: emp.email });
     if (!existingUser) {
       await User.create({
@@ -61,8 +59,8 @@ router.post('/', auth, adminOnly, upload.single('photo'), async (req, res) => {
       });
     }
 
-    res.status(201).json({ 
-      ...emp.toObject(), 
+    res.status(201).json({
+      ...emp.toObject(),
       loginEmail: emp.email,
       loginPassword: userPassword
     });
@@ -72,21 +70,35 @@ router.post('/', auth, adminOnly, upload.single('photo'), async (req, res) => {
   }
 });
 
-// Update employee
+// Update employee + create/update user account
 router.put('/:id', auth, upload.single('photo'), async (req, res) => {
   try {
     const { password, ...data } = req.body;
     if (req.file) data.photo = `/uploads/${req.file.filename}`;
-    
+
     const emp = await Employee.findByIdAndUpdate(req.params.id, data, { new: true });
     if (!emp) return res.status(404).json({ message: 'Not found' });
 
-    // Update password if provided
-    if (password) {
+    // User account இருக்கா check பண்ணு — இல்லன்னா create பண்ணு
+    const existingUser = await User.findOne({ email: emp.email });
+
+    if (!existingUser) {
+      // User இல்லை — புதுசா create பண்ணு
+      const defaultPassword = password || 'Welcome@123';
+      const hashed = await bcrypt.hash(defaultPassword, 10);
+      await User.create({
+        name: emp.name,
+        email: emp.email,
+        password: hashed,
+        role: emp.role || 'employee',
+        employeeId: emp._id
+      });
+    } else if (password) {
+      // User இருக்கு + password கொடுத்திருக்கா — update பண்ணு
       const hashed = await bcrypt.hash(password, 10);
       await User.findOneAndUpdate(
         { email: emp.email },
-        { password: hashed }
+        { password: hashed, role: emp.role || 'employee' }
       );
     }
 
