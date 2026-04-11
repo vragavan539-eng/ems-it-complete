@@ -4,7 +4,7 @@ import FaceCapture from '../components/face-recognition/FaceCapture';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || 'https://ems-it-complete-2.onrender.com';
 
 /* ─── Particle Canvas ─────────────────────────────────── */
 const ParticleCanvas = () => {
