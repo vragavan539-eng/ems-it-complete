@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api';
 
+const API = import.meta.env.VITE_API_URL || 'https://ems-it-complete-2.onrender.com';
+
 export default function Profile() {
   const { user, logout } = useAuth();
   const [emp, setEmp] = useState(null);
@@ -14,28 +16,25 @@ export default function Profile() {
   const [msg, setMsg] = useState('');
 
   useEffect(() => {
-api.get('/employees').then(list => {
-const me = Array.isArray(list) ? list.find(e => e.email === user?.email) : null;
+    api.get('/employees').then(list => {
+      const me = Array.isArray(list) ? list.find(e => e.email === user?.email) : null;
       if (me) { setEmp(me); setForm({ name: me.name, phone: me.phone||'', designation: me.designation||'', address: me.address||'', bloodGroup: me.bloodGroup||'', skills: (me.skills||[]).join(', '), emergencyName: me.emergencyContact?.name||'', emergencyPhone: me.emergencyContact?.phone||'' }); }
       setLoading(false);
     });
   }, []);
 
-const save = async () => {
+  const save = async () => {
     setSaving(true);
     setMsg('');
     try {
       const fd = new FormData();
       Object.keys(form).forEach(k => { if(form[k]) fd.append(k, form[k]); });
       if (photo) fd.append('photo', photo);
-      
       if (emp?._id) {
-        // Employee record இருந்தா update பண்ணு
         const res = await api.putForm(`/employees/${emp._id}`, fd);
         if (res._id) { setEmp(res); setMsg('Profile updated!'); setEditing(false); }
         else setMsg('Update failed: ' + (res.message || 'Error'));
       } else {
-        // Employee record இல்லன்னா create பண்ணு
         fd.append('name', user.name);
         fd.append('email', user.email);
         fd.append('role', user.role);
@@ -56,7 +55,8 @@ const save = async () => {
   ];
 
   if (loading) return <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'60vh', color:'#94a3b8', fontSize:14 }}>⏳ Loading profile...</div>;
-const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:5000${emp.photo}?t=${Date.now()}` : null;
+
+  const photoUrl = emp?.photo ? `${API}${emp.photo}?t=${Date.now()}` : null;
   const initials = (emp?.name || user?.name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
 
   return (
@@ -67,7 +67,6 @@ const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:500
         .edit-inp:focus { border-color: #6366f1 !important; outline: none; box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
       `}</style>
 
-      {/* Header Banner */}
       <div style={{ background: 'linear-gradient(135deg, #1e1b4b, #312e81, #4338ca)', borderRadius: 20, padding: '36px 36px 80px', marginBottom: -60, position: 'relative', overflow: 'hidden' }}>
         <div style={{ position:'absolute', inset:0, backgroundImage:'linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px)', backgroundSize:'32px 32px' }} />
         <div style={{ position:'relative', display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
@@ -81,10 +80,8 @@ const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:500
         </div>
       </div>
 
-      {/* Profile Card */}
       <div style={{ background:'#fff', borderRadius:20, margin:'0 24px', padding:'24px 28px', boxShadow:'0 4px 24px rgba(0,0,0,0.08)', position:'relative', zIndex:1, marginBottom:20 }}>
         <div style={{ display:'flex', alignItems:'flex-end', gap:20 }}>
-          {/* Avatar */}
           <div style={{ position:'relative', flexShrink:0 }}>
             <div style={{ width:90, height:90, borderRadius:'50%', border:'4px solid #fff', boxShadow:'0 4px 16px rgba(0,0,0,0.12)', overflow:'hidden', background:'linear-gradient(135deg,#6366f1,#8b5cf6)', display:'flex', alignItems:'center', justifyContent:'center' }}>
               {photoUrl
@@ -100,10 +97,9 @@ const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:500
             )}
           </div>
 
-          {/* Info */}
           <div style={{ flex:1 }}>
             <h2 style={{ fontSize:22, fontWeight:800, color:'#0f172a', marginBottom:4 }}>{emp?.name || user?.name}</h2>
-           <p style={{ color:'#64748b', fontSize:14, marginBottom:8 }}>{emp?.designation || emp?.role || user?.role || 'Employee'}</p>
+            <p style={{ color:'#64748b', fontSize:14, marginBottom:8 }}>{emp?.designation || emp?.role || user?.role || 'Employee'}</p>
             <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
               {emp?.employeeCode && emp?.role !== 'admin' && <span style={badge('#ede9fe','#6366f1')}>{emp.employeeCode}</span>}
               <span style={badge(emp?.status==='active'?'#dcfce7':'#fee2e2', emp?.status==='active'?'#16a34a':'#dc2626')}>● {emp?.status || 'Active'}</span>
@@ -111,7 +107,6 @@ const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:500
             </div>
           </div>
 
-          {/* Actions */}
           <div style={{ display:'flex', gap:10 }}>
             {msg && <span style={{ fontSize:12, color:'#16a34a', background:'#dcfce7', padding:'6px 12px', borderRadius:8, fontWeight:600 }}>✓ {msg}</span>}
             {editing
@@ -125,7 +120,6 @@ const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:500
         </div>
       </div>
 
-      {/* Quick Stats */}
       {emp && (
         <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:12, marginBottom:20 }}>
           {[
@@ -143,9 +137,7 @@ const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:500
         </div>
       )}
 
-      {/* Tabs + Content */}
       <div style={{ background:'#fff', borderRadius:20, boxShadow:'0 1px 4px rgba(0,0,0,0.07)', overflow:'hidden' }}>
-        {/* Tab bar */}
         <div style={{ display:'flex', borderBottom:'1px solid #f1f5f9', padding:'0 8px' }}>
           {TABS.map(t => (
             <button key={t.id} className="ptab" onClick={() => setTab(t.id)}
@@ -156,8 +148,6 @@ const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:500
         </div>
 
         <div style={{ padding:28, animation:'fadeIn 0.3s ease' }}>
-
-          {/* OVERVIEW */}
           {tab === 'overview' && (
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
               <Section title="Work Information">
@@ -185,7 +175,6 @@ const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:500
             </div>
           )}
 
-          {/* PERSONAL */}
           {tab === 'personal' && (
             <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
               <Section title="Contact Details">
@@ -206,7 +195,6 @@ const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:500
             </div>
           )}
 
-          {/* BANK */}
           {tab === 'bank' && (
             <div style={{ maxWidth:500 }}>
               <div style={{ background:'#f8fafc', borderRadius:12, padding:20, border:'1px solid #e2e8f0' }}>
@@ -219,7 +207,6 @@ const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:500
             </div>
           )}
 
-          {/* EMERGENCY */}
           {tab === 'emergency' && (
             <div style={{ maxWidth:500 }}>
               <Section title="Emergency Contact">

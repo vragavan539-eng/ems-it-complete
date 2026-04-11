@@ -3,6 +3,8 @@ import { PageHeader, Btn, Modal, Input, Select, Table, Loader, Badge } from '../
 import { useAuth } from '../context/AuthContext';
 import api from '../api';
 
+const API = import.meta.env.VITE_API_URL || 'https://ems-it-complete-2.onrender.com';
+
 export default function Documents() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin' || user?.role === 'hr';
@@ -32,15 +34,13 @@ export default function Documents() {
     { key: 'employee', label: 'Employee', render: r => <strong>{r.employee?.name || '—'}</strong> },
     { key: 'title', label: 'Document' },
     { key: 'type', label: 'Type', render: r => <Badge label={r.type} color="#6366f1" /> },
-    { key: 'fileName', label: 'File', render: r => r.filePath ? <a href={`http://https://ems-it-complete-2.onrender.com:5000${r.filePath}`} target="_blank" rel="noreferrer" style={{ color: '#6366f1', fontSize: 12 }}>📎 View</a> : '—' },
+    { key: 'fileName', label: 'File', render: r => r.filePath ? <a href={`${API}${r.filePath}`} target="_blank" rel="noreferrer" style={{ color: '#6366f1', fontSize: 12 }}>📎 View</a> : '—' },
     { key: 'isVerified', label: 'Verified', render: r => r.isVerified ? <span style={{ color: '#22c55e' }}>✅ Yes</span> : <span style={{ color: '#f59e0b' }}>⏳ No</span> },
     { key: 'expiryDate', label: 'Expiry', render: r => r.expiryDate ? new Date(r.expiryDate).toLocaleDateString() : '—' },
     {
       key: 'actions', label: 'Actions', render: r => (
         <div style={{ display: 'flex', gap: 5 }}>
-          {/* Verify — admin/hr ku mattum */}
           {isAdmin && !r.isVerified && <Btn size="sm" variant="success" onClick={() => verify(r._id)}>Verify</Btn>}
-          {/* Delete — everyone ku */}
           <Btn size="sm" variant="danger" onClick={async () => { if(!confirm('Delete?'))return; await api.delete(`/documents/${r._id}`); load(); }}>Del</Btn>
         </div>
       )

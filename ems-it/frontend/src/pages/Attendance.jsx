@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API = 'http://https://ems-it-complete-2.onrender.com:5000';
+const API = import.meta.env.VITE_API_URL || 'https://ems-it-complete-2.onrender.com';
 const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const years = [2023, 2024, 2025, 2026];
 
@@ -10,9 +10,9 @@ const Attendance = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState({ month: new Date().getMonth()+1, year: new Date().getFullYear(), search: '' });
 
-  useEffect(() => { fetch(); }, [filter.month, filter.year]);
+  useEffect(() => { fetchData(); }, [filter.month, filter.year]);
 
-  const fetch = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
@@ -45,7 +45,7 @@ const Attendance = () => {
     <div style={s.page}>
       <div style={s.header}>
         <div><h1 style={s.title}>Attendance</h1><p style={s.sub}>All employee attendance records</p></div>
-        <button onClick={fetch} style={s.btn}>↻ Refresh</button>
+        <button onClick={fetchData} style={s.btn}>↻ Refresh</button>
       </div>
 
       <div style={s.statsRow}>
