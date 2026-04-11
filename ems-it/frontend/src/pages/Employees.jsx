@@ -97,7 +97,7 @@ export default function Employees() {
   const cols = [
     { key: 'photo', label: '', render: r => (
       <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#ede9fe', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#6366f1' }}>
-        {r.photo ? <img src={`http://localhost:5000${r.photo}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : r.name?.[0]}
+        {r.photo ? <img src={`http://https://ems-it-complete-2.onrender.com:5000${r.photo}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : r.name?.[0]}
       </div>
     )},
     { key: 'employeeCode', label: 'Code' },

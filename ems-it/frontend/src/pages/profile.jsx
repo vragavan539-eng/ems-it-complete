@@ -56,7 +56,7 @@ const save = async () => {
   ];
 
   if (loading) return <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'60vh', color:'#94a3b8', fontSize:14 }}>⏳ Loading profile...</div>;
-const photoUrl = emp?.photo ? `http://localhost:5000${emp.photo}?t=${Date.now()}` : null;
+const photoUrl = emp?.photo ? `http://https://ems-it-complete-2.onrender.com:5000${emp.photo}?t=${Date.now()}` : null;
   const initials = (emp?.name || user?.name || 'U').split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
 
   return (

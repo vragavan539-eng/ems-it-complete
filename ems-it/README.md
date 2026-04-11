@@ -46,7 +46,7 @@ mongod
 cd backend
 npm install
 npm run dev
-# ✅ Running on http://localhost:5000
+# ✅ Running on http://https://ems-it-complete-2.onrender.com:5000
 ```
 
 ### Step 3 — Frontend Setup
@@ -54,11 +54,11 @@ npm run dev
 cd frontend
 npm install
 npm run dev
-# ✅ Running on http://localhost:5173
+# ✅ Running on http://https://ems-it-complete-2.onrender.com:5173
 ```
 
 ### Step 4 — Create Admin User
-Open browser → http://localhost:5173/login → Register → Select role: **Admin**
+Open browser → http://https://ems-it-complete-2.onrender.com:5173/login → Register → Select role: **Admin**
 
 ---
 
@@ -66,7 +66,7 @@ Open browser → http://localhost:5173/login → Register → Select role: **Adm
 
 ### `backend/.env`
 ```
-MONGO_URI=mongodb://localhost:27017/ems_it_db
+MONGO_URI=mongodb://https://ems-it-complete-2.onrender.com:27017/ems_it_db
 JWT_SECRET=ems_it_super_secret_2024
 PORT=5000
 ```

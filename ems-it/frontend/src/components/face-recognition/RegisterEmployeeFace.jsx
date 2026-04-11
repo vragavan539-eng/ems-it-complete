@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import FaceCapture from '../components/face-recognition/FaceCapture';
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000';
+const API_URL = 'http://https://ems-it-complete-2.onrender.com:5000';
 
 const RegisterEmployeeFace = ({ employeeId, employeeName, onSuccess, onCancel }) => {
     const [loading, setLoading] = useState(false);

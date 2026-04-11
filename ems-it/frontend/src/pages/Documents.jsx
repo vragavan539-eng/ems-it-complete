@@ -32,7 +32,7 @@ export default function Documents() {
     { key: 'employee', label: 'Employee', render: r => <strong>{r.employee?.name || '—'}</strong> },
     { key: 'title', label: 'Document' },
     { key: 'type', label: 'Type', render: r => <Badge label={r.type} color="#6366f1" /> },
-    { key: 'fileName', label: 'File', render: r => r.filePath ? <a href={`http://localhost:5000${r.filePath}`} target="_blank" rel="noreferrer" style={{ color: '#6366f1', fontSize: 12 }}>📎 View</a> : '—' },
+    { key: 'fileName', label: 'File', render: r => r.filePath ? <a href={`http://https://ems-it-complete-2.onrender.com:5000${r.filePath}`} target="_blank" rel="noreferrer" style={{ color: '#6366f1', fontSize: 12 }}>📎 View</a> : '—' },
     { key: 'isVerified', label: 'Verified', render: r => r.isVerified ? <span style={{ color: '#22c55e' }}>✅ Yes</span> : <span style={{ color: '#f59e0b' }}>⏳ No</span> },
     { key: 'expiryDate', label: 'Expiry', render: r => r.expiryDate ? new Date(r.expiryDate).toLocaleDateString() : '—' },
     {
