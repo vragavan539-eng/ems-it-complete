@@ -4,7 +4,7 @@ import { PageHeader, Btn, Badge, Modal, Input, Select, Table, Loader, statusColo
 import api from '../api';
 import FaceScanner from '../components/facescanner';
 
-const EMPTY = { name:'', email:'', phone:'', designation:'', salary:'', department:'', role:'employee', status:'active', skills:'', address:'', bloodGroup:'', joiningDate:'', password:'' };
+const EMPTY = { name:'', email:'', password:'', phone:'', designation:'', salary:'', department:'', role:'employee', status:'active', skills:'', address:'', bloodGroup:'', joiningDate:'' };
 
 export default function Employees() {
   const [list, setList] = useState([]);
@@ -60,29 +60,24 @@ export default function Employees() {
 
   const openEdit = (emp) => {
     setForm({
-      name: emp.name || '', email: emp.email || '', phone: emp.phone || '',
-      designation: emp.designation || '', salary: emp.salary || '',
-      department: emp.department?._id || '', role: emp.role || 'employee',
-      status: emp.status || 'active', skills: (emp.skills || []).join(', '),
-      address: emp.address || '', bloodGroup: emp.bloodGroup || '',
+      name: emp.name || '', email: emp.email || '', password: '',
+      phone: emp.phone || '', designation: emp.designation || '',
+      salary: emp.salary || '', department: emp.department?._id || '',
+      role: emp.role || 'employee', status: emp.status || 'active',
+      skills: (emp.skills || []).join(', '), address: emp.address || '',
+      bloodGroup: emp.bloodGroup || '',
       joiningDate: emp.joiningDate ? emp.joiningDate.split('T')[0] : '',
-      password: '',
     });
     setEditId(emp._id); setShow(true); setErr('');
   };
 
   const openFaceRegister = (emp) => {
-    setFaceEmp(emp);
-    setFaceMsg('');
-    setShowFace(true);
+    setFaceEmp(emp); setFaceMsg(''); setShowFace(true);
   };
 
   const handleFaceRegister = async (descriptor) => {
     try {
-      const res = await api.post('/face/register', {
-        employeeId: faceEmp._id,
-        descriptor
-      });
+      const res = await api.post('/face/register', { employeeId: faceEmp._id, descriptor });
       setFaceMsg('✅ ' + res.message);
       load();
     } catch (err) {
@@ -100,7 +95,9 @@ export default function Employees() {
   const cols = [
     { key: 'photo', label: '', render: r => (
       <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#ede9fe', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#6366f1' }}>
-        {r.photo ? <img src={`https://ems-it-complete-2.onrender.com${r.photo}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : r.name?.[0]}
+        {r.photo
+          ? <img src={`https://ems-it-complete-2.onrender.com${r.photo}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          : r.name?.[0]}
       </div>
     )},
     { key: 'employeeCode', label: 'Code' },
@@ -111,10 +108,7 @@ export default function Employees() {
     { key: 'salary', label: 'Salary', render: r => r.salary ? '₹' + Number(r.salary).toLocaleString() : '—' },
     { key: 'status', label: 'Status', render: r => <Badge label={r.status} color={statusColor(r.status)} /> },
     { key: 'face', label: 'Face', render: r => (
-      <Badge
-        label={r.faceDescriptor ? '✅ Registered' : '❌ Not Set'}
-        color={r.faceDescriptor ? 'green' : 'gray'}
-      />
+      <Badge label={r.faceDescriptor ? '✅ Registered' : '❌ Not Set'} color={r.faceDescriptor ? 'green' : 'gray'} />
     )},
     { key: 'actions', label: 'Actions', render: r => (
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -132,7 +126,7 @@ export default function Employees() {
   return (
     <div>
       <PageHeader title="👥 Employees" subtitle={`${filtered.length} employees`}
-       action={isAdmin && <Btn onClick={() => { setShow(true); setForm(EMPTY); setEditId(null); setErr(''); }}>+ Add Employee</Btn>} />
+        action={isAdmin && <Btn onClick={() => { setShow(true); setForm(EMPTY); setEditId(null); setErr(''); }}>+ Add Employee</Btn>} />
 
       <div style={{ background: '#fff', borderRadius: 12, padding: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.07)', marginBottom: 16 }}>
         <input style={{ padding: '8px 14px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, width: 300 }}
@@ -145,45 +139,34 @@ export default function Employees() {
 
       {/* Add/Edit Modal */}
       <Modal show={show} onClose={() => setShow(false)} title={editId ? 'Edit Employee' : 'Add Employee'} width={620}>
-        {err && <div style={{ background: '#fef2f2', color: '#dc2626', padding: '8px 12px', borderRadius: 8, fontSize: 13, marginBottom: 12 }}>⚠️ {err}</div>}
+        {err && (
+          <div style={{ background: '#fef2f2', color: '#dc2626', padding: '8px 12px', borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
+            ⚠️ {err}
+          </div>
+        )}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+
+          {/* Name + Email */}
           <Input label="Full Name *" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="John Doe" />
           <Input label="Email *" required type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="john@company.com" />
-          <Input label="Phone" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+91 98765 43210" />
-          <Input label="Designation" value={form.designation} onChange={e => setForm({...form, designation: e.target.value})} placeholder="Software Engineer" />
-          <Select label="Department" value={form.department} onChange={e => setForm({...form, department: e.target.value})}
-            options={depts.map(d => ({ value: d._id, label: d.name }))} />
-          <Select label="Role" value={form.role} onChange={e => setForm({...form, role: e.target.value})}
-            options={[{value:'employee',label:'Employee'},{value:'manager',label:'Manager'},{value:'hr',label:'HR'},{value:'admin',label:'Admin'}]} />
-          <Input label="Salary (₹)" type="number" value={form.salary} onChange={e => setForm({...form, salary: e.target.value})} placeholder="50000" />
-          <Select label="Status" value={form.status} onChange={e => setForm({...form, status: e.target.value})}
-            options={[{value:'active',label:'Active'},{value:'inactive',label:'Inactive'},{value:'resigned',label:'Resigned'}]} />
-          <Input label="Joining Date" type="date" value={form.joiningDate} onChange={e => setForm({...form, joiningDate: e.target.value})} />
-          <Input label="Blood Group" value={form.bloodGroup} onChange={e => setForm({...form, bloodGroup: e.target.value})} placeholder="O+" />
-          <div style={{ gridColumn: 'span 2' }}>
-            <Input label="Skills (comma separated)" value={form.skills} onChange={e => setForm({...form, skills: e.target.value})} placeholder="React, Node.js, MongoDB" />
-          </div>
-          <div style={{ gridColumn: 'span 2' }}>
-            <Input label="Address" value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="123 Main St, Chennai" />
-          </div>
 
-          {/* Password Field */}
-          <div style={{ gridColumn: 'span 2' }}>
-            <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 5 }}>
-              {editId ? '🔑 New Password (விட்டால் மாறாது)' : '🔑 Password *'}
+          {/* Password - Full Width - TOP POSITION */}
+          <div style={{ gridColumn: 'span 2', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '12px 14px' }}>
+            <label style={{ fontSize: 12, fontWeight: 700, color: '#166534', display: 'block', marginBottom: 6 }}>
+              🔑 {editId ? 'New Password' : 'Password *'}
+              {editId && <span style={{ fontWeight: 400, color: '#4ade80', fontSize: 11, marginLeft: 6 }}>(விட்டால் மாறாது)</span>}
             </label>
             <div style={{ position: 'relative' }}>
               <input
                 type={showPass ? 'text' : 'password'}
                 value={form.password}
                 onChange={e => setForm({...form, password: e.target.value})}
-                placeholder={editId ? 'புதிய password மட்டும் type பண்ணுங்க' : 'Employee login password'}
+                placeholder={editId ? 'புதிய password (optional)' : 'Employee login password *'}
                 style={{
                   width: '100%', boxSizing: 'border-box',
-                  padding: '8px 40px 8px 12px',
-                  border: '1px solid #e2e8f0', borderRadius: 8,
-                  fontSize: 13, outline: 'none',
-                  background: '#f8fafc'
+                  padding: '9px 42px 9px 12px',
+                  border: '1px solid #86efac', borderRadius: 8,
+                  fontSize: 13, outline: 'none', background: '#fff'
                 }}
               />
               <button
@@ -193,24 +176,55 @@ export default function Employees() {
                   position: 'absolute', right: 10, top: '50%',
                   transform: 'translateY(-50%)',
                   background: 'none', border: 'none',
-                  cursor: 'pointer', fontSize: 16, color: '#64748b'
+                  cursor: 'pointer', fontSize: 16
                 }}
               >
                 {showPass ? '🙈' : '👁️'}
               </button>
             </div>
             {!editId && (
-              <p style={{ fontSize: 11, color: '#94a3b8', marginTop: 4 }}>
-                இந்த password-லயே employee login பண்ணலாம்
+              <p style={{ fontSize: 11, color: '#16a34a', marginTop: 5 }}>
+                💡 Employee இந்த email + password-லயே login பண்ணலாம்
               </p>
             )}
           </div>
 
+          {/* Phone + Designation */}
+          <Input label="Phone" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} placeholder="+91 98765 43210" />
+          <Input label="Designation" value={form.designation} onChange={e => setForm({...form, designation: e.target.value})} placeholder="Software Engineer" />
+
+          {/* Department + Role */}
+          <Select label="Department" value={form.department} onChange={e => setForm({...form, department: e.target.value})}
+            options={depts.map(d => ({ value: d._id, label: d.name }))} />
+          <Select label="Role" value={form.role} onChange={e => setForm({...form, role: e.target.value})}
+            options={[{value:'employee',label:'Employee'},{value:'manager',label:'Manager'},{value:'hr',label:'HR'},{value:'admin',label:'Admin'}]} />
+
+          {/* Salary + Status */}
+          <Input label="Salary (₹)" type="number" value={form.salary} onChange={e => setForm({...form, salary: e.target.value})} placeholder="50000" />
+          <Select label="Status" value={form.status} onChange={e => setForm({...form, status: e.target.value})}
+            options={[{value:'active',label:'Active'},{value:'inactive',label:'Inactive'},{value:'resigned',label:'Resigned'}]} />
+
+          {/* Joining Date + Blood Group */}
+          <Input label="Joining Date" type="date" value={form.joiningDate} onChange={e => setForm({...form, joiningDate: e.target.value})} />
+          <Input label="Blood Group" value={form.bloodGroup} onChange={e => setForm({...form, bloodGroup: e.target.value})} placeholder="O+" />
+
+          {/* Skills */}
+          <div style={{ gridColumn: 'span 2' }}>
+            <Input label="Skills (comma separated)" value={form.skills} onChange={e => setForm({...form, skills: e.target.value})} placeholder="React, Node.js, MongoDB" />
+          </div>
+
+          {/* Address */}
+          <div style={{ gridColumn: 'span 2' }}>
+            <Input label="Address" value={form.address} onChange={e => setForm({...form, address: e.target.value})} placeholder="123 Main St, Chennai" />
+          </div>
+
+          {/* Profile Photo */}
           <div style={{ gridColumn: 'span 2' }}>
             <label style={{ fontSize: 12, fontWeight: 600, color: '#475569', display: 'block', marginBottom: 5 }}>Profile Photo</label>
             <input type="file" accept="image/*" onChange={e => setPhoto(e.target.files[0])}
               style={{ fontSize: 13, border: '1px solid #e2e8f0', borderRadius: 8, padding: '6px 10px', width: '100%' }} />
           </div>
+
         </div>
         <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'flex-end' }}>
           <Btn variant="ghost" onClick={() => setShow(false)}>Cancel</Btn>
@@ -224,10 +238,7 @@ export default function Employees() {
           <p style={{ fontSize: 13, color: '#64748b', marginBottom: 16 }}>
             Camera-ல முகம் வச்சு <strong>Scan</strong> பண்ணுங்க
           </p>
-          <FaceScanner
-            onDetect={handleFaceRegister}
-            buttonLabel="Capture & Register"
-          />
+          <FaceScanner onDetect={handleFaceRegister} buttonLabel="Capture & Register" />
           {faceMsg && (
             <div style={{
               marginTop: 12, padding: '8px 12px',
