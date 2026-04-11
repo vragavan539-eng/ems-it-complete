@@ -1,5 +1,7 @@
-const BASE = 'http://localhost:5000/api';
-
+const BASE = import.meta.env.VITE_API_URL 
+  ? `${import.meta.env.VITE_API_URL}/api` 
+  : 'http://localhost:5000/api';
+  
 const getHeaders = (isForm = false) => {
   const token = localStorage.getItem('token');
   const headers = { Authorization: `Bearer ${token}` };
