@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 
-const API = 'http://https://ems-it-complete-2.onrender.com:5000';
+const API = import.meta.env.VITE_API_URL || 'https://ems-it-complete-2.onrender.com';
 const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const years = [2023, 2024, 2025, 2026];
 
