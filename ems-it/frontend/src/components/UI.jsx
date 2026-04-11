@@ -74,10 +74,10 @@ export function Select({ label, value, onChange, options = [], name, required })
 export function Modal({ show, onClose, title, children, width = 520 }) {
   if (!show) return null;
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: 16 }}
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 1000, padding: '24px 16px', overflowY: 'auto' }}
       onClick={e => e.target === e.currentTarget && onClose()}>
-      <div style={{ background: '#fff', borderRadius: 16, width: '100%', maxWidth: width, maxHeight: '90vh', overflow: 'auto', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid #f1f5f9' }}>
+      <div style={{ background: '#fff', borderRadius: 16, width: '100%', maxWidth: width, boxShadow: '0 20px 60px rgba(0,0,0,0.2)', marginTop: 'auto', marginBottom: 'auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', borderBottom: '1px solid #f1f5f9', position: 'sticky', top: 0, background: '#fff', borderRadius: '16px 16px 0 0', zIndex: 1 }}>
           <h3 style={{ fontWeight: 700, color: '#0f172a', fontSize: 16 }}>{title}</h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: 20, color: '#94a3b8', lineHeight: 1 }}>×</button>
         </div>
