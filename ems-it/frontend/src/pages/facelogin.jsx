@@ -99,10 +99,7 @@ const FaceLogin = () => {
 
   useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
 
-  /* ─── Back Button Handler ─── */
-  const handleBack = () => {
-    navigate(-1);
-  };
+  const handleBack = () => { navigate(-1); };
 
   const handleEmailLogin = async (e) => {
     e.preventDefault();
@@ -143,52 +140,39 @@ const FaceLogin = () => {
       <style>{css}</style>
       <ParticleCanvas />
 
-      {/* Ambient glow blobs */}
       <div style={s.blob1} /><div style={s.blob2} /><div style={s.blob3} />
 
-      {/* 3D floating cubes */}
       <Cube style={{ top: '8%', left: '5%', animationDelay: '0s', transform: 'rotateX(20deg) rotateY(30deg)' }} size={50} color="rgb(120,80,255)" />
       <Cube style={{ top: '70%', left: '8%', animationDelay: '-3s', transform: 'rotateX(-15deg) rotateY(55deg)' }} size={36} color="rgb(80,200,255)" />
       <Cube style={{ top: '15%', right: '6%', animationDelay: '-5s', transform: 'rotateX(35deg) rotateY(-20deg)' }} size={42} color="rgb(200,80,255)" />
       <Cube style={{ top: '75%', right: '7%', animationDelay: '-1.5s', transform: 'rotateX(-25deg) rotateY(40deg)' }} size={55} color="rgb(80,255,200)" />
       <Cube style={{ top: '45%', left: '2%', animationDelay: '-2s', transform: 'rotateX(10deg) rotateY(70deg)' }} size={28} color="rgb(255,120,80)" />
 
-      {/* Holographic rings */}
       <div style={s.ring1} /><div style={s.ring2} /><div style={s.ring3} />
 
-      {/* ── BACK BUTTON ── */}
+      {/* Back Button */}
       <button
         onClick={handleBack}
         onMouseEnter={() => setBackHovered(true)}
         onMouseLeave={() => setBackHovered(false)}
-        style={{
-          ...s.backBtn,
-          ...(backHovered ? s.backBtnHover : {}),
-        }}
+        style={{ ...s.backBtn, ...(backHovered ? s.backBtnHover : {}) }}
       >
-        <svg
-          width="14" height="14" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor"
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
-          style={{ transition: 'transform 0.2s', transform: backHovered ? 'translateX(-3px)' : 'translateX(0)' }}
-        >
-          <path d="M19 12H5"/>
-          <path d="m12 19-7-7 7-7"/>
+          style={{ transition: 'transform 0.2s', transform: backHovered ? 'translateX(-3px)' : 'translateX(0)' }}>
+          <path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>
         </svg>
         Back
       </button>
 
       {/* Main card */}
       <div style={{ ...s.card, opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0) scale(1)' : 'translateY(30px) scale(0.97)', transition: 'all 0.7s cubic-bezier(0.22,1,0.36,1)' }}>
-
-        {/* Holographic top shimmer */}
         <div style={s.shimmer} />
 
-        {/* ── LEFT PANEL ── */}
+        {/* LEFT PANEL */}
         <div style={s.left}>
           <div style={s.leftGlow} />
           <div style={{ position: 'relative', zIndex: 1 }}>
-            {/* Logo */}
             <div style={s.logoRow}>
               <div style={s.logoHex}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
@@ -199,15 +183,11 @@ const FaceLogin = () => {
               <span style={s.logoText}>EMS</span>
               <span style={s.logoBadge}>SECURE</span>
             </div>
-
-            {/* Title */}
             <div style={{ margin: '2.5rem 0 1rem' }}>
               <div style={s.titleTag}>PLATFORM v2.0</div>
               <h1 style={s.heroTitle}>Employee<br/><span style={s.titleAccent}>Management</span><br/>System</h1>
               <div style={s.titleLine} />
             </div>
-
-            {/* Features */}
             <div style={s.features}>
               {[
                 { icon: '⚡', label: 'Instant Face Login', desc: 'Sub-second recognition' },
@@ -223,8 +203,6 @@ const FaceLogin = () => {
                 </div>
               ))}
             </div>
-
-            {/* Stats */}
             <div style={s.stats}>
               {[['99.9%', 'Uptime'], ['0.4s', 'Face Auth'], ['256bit', 'Encryption']].map(([v, l]) => (
                 <div key={l} style={s.statBox}>
@@ -237,11 +215,9 @@ const FaceLogin = () => {
           <p style={s.leftFooter}>© 2025 EMS Platform · All rights reserved</p>
         </div>
 
-        {/* ── RIGHT PANEL ── */}
+        {/* RIGHT PANEL */}
         <div style={s.right}>
           <div style={s.rightInner}>
-
-            {/* Header */}
             <div style={{ marginBottom: '1.8rem' }}>
               <div style={s.welcomeTag}>
                 <span style={s.tagDot} />
@@ -251,62 +227,67 @@ const FaceLogin = () => {
               <p style={s.welcomeSub}>Authenticate to enter your workspace</p>
             </div>
 
-            {/* Mode Tabs */}
             <div style={s.tabs}>
               {['email', 'face'].map(m => (
                 <button key={m} style={{ ...s.tab, ...(mode === m ? s.tabOn : s.tabOff) }}
                   onClick={() => { setMode(m); setError(''); setSuccess(''); }}>
-                  {m === 'email'
-                    ? <><EmailIcon /><span>Email</span></>
-                    : <><FaceIcon /><span>Face ID</span></>}
+                  {m === 'email' ? <><EmailIcon /><span>Email</span></> : <><FaceIcon /><span>Face ID</span></>}
                   {mode === m && <div style={s.tabIndicator} />}
                 </button>
               ))}
             </div>
 
-            {/* Alerts */}
             {error && <Alert type="error" msg={error} />}
             {success && <Alert type="success" msg={success} />}
 
-            {/* Email Form */}
             {mode === 'email' && (
               <form onSubmit={handleEmailLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                <Field label="Email Address" type="email" icon={<EmailIcon />}
-                  value={formData.email} placeholder="you@company.com"
+                <Field
+                  label="Email Address"
+                  type="email"
+                  icon={<EmailIcon />}
+                  value={formData.email}
+                  placeholder="you@company.com"
+                  name="email"
+                  autoComplete="email"
                   focused={focusedField === 'email'}
-                  onFocus={() => setFocusedField('email')} onBlur={() => setFocusedField('')}
-                  onChange={v => setFormData({ ...formData, email: v })} />
+                  onFocus={() => setFocusedField('email')}
+                  onBlur={() => setFocusedField('')}
+                  onChange={v => setFormData({ ...formData, email: v })}
+                />
 
                 <div style={{ position: 'relative' }}>
-                  <Field label="Password" type={showPassword ? 'text' : 'password'} icon={<LockIcon />}
-                    value={formData.password} placeholder="••••••••••"
+                  <Field
+                    label="Password"
+                    type={showPassword ? 'text' : 'password'}
+                    icon={<LockIcon />}
+                    value={formData.password}
+                    placeholder="••••••••••"
+                    name="password"
+                    autoComplete="current-password"
                     focused={focusedField === 'pass'}
-                    onFocus={() => setFocusedField('pass')} onBlur={() => setFocusedField('')}
-                    onChange={v => setFormData({ ...formData, password: v })} />
+                    onFocus={() => setFocusedField('pass')}
+                    onBlur={() => setFocusedField('')}
+                    onChange={v => setFormData({ ...formData, password: v })}
+                  />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} style={s.eyeBtn}>
                     {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                   </button>
                 </div>
 
                 <button type="submit" style={{ ...s.submitBtn, marginTop: '0.4rem' }} disabled={loading}>
-                  {loading
-                    ? <><Spinner /> Authenticating...</>
-                    : <><span>Sign In</span><ArrowIcon /></>}
+                  {loading ? <><Spinner /> Authenticating...</> : <><span>Sign In</span><ArrowIcon /></>}
                   <div style={s.btnGlow} />
                 </button>
               </form>
             )}
 
-            {/* Face Mode */}
             {mode === 'face' && (
               <div>
-                {loading
-                  ? <VerifyingState />
-                  : <FaceCapture onFaceDetected={handleFaceDetected} mode="login" />}
+                {loading ? <VerifyingState /> : <FaceCapture onFaceDetected={handleFaceDetected} mode="login" />}
               </div>
             )}
 
-            {/* Switch link */}
             <div style={s.switchRow}>
               <div style={s.switchLine} />
               <button onClick={() => { setMode(mode === 'face' ? 'email' : 'face'); setError(''); setSuccess(''); }} style={s.switchBtn}>
@@ -316,22 +297,29 @@ const FaceLogin = () => {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   );
 };
 
 /* ─── Sub-components ──────────────────────────────────── */
-const Field = ({ label, type, icon, value, placeholder, focused, onFocus, onBlur, onChange }) => (
+const Field = ({ label, type, icon, value, placeholder, focused, onFocus, onBlur, onChange, name, autoComplete }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
     <label style={s.fieldLabel}>{label}</label>
     <div style={{ ...s.inputWrap, ...(focused ? s.inputWrapFocused : {}) }}>
       <span style={s.inputIcon}>{icon}</span>
-      <input type={type} value={value} placeholder={placeholder}
-        onFocus={onFocus} onBlur={onBlur}
+      <input
+        type={type}
+        value={value}
+        placeholder={placeholder}
+        name={name}
+        autoComplete={autoComplete}
+        onFocus={onFocus}
+        onBlur={onBlur}
         onChange={e => onChange(e.target.value)}
-        style={s.input} required />
+        style={s.input}
+        required
+      />
       {focused && <div style={s.inputBeam} />}
     </div>
   </div>
@@ -371,44 +359,25 @@ const s = {
     padding: '1.5rem', fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
     position: 'relative', overflow: 'hidden', perspective: '1000px',
   },
-
-  /* ── Back Button ── */
   backBtn: {
-    position: 'fixed',
-    top: '1.5rem',
-    left: '1.5rem',
-    zIndex: 10,
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    background: 'rgba(124,58,237,0.12)',
-    border: '1px solid rgba(124,58,237,0.3)',
-    borderRadius: 10,
-    padding: '8px 16px',
-    cursor: 'pointer',
-    color: '#a78bfa',
-    fontSize: '0.78rem',
-    fontWeight: 600,
-    fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
-    letterSpacing: '0.04em',
-    transition: 'all 0.2s ease',
-    backdropFilter: 'blur(8px)',
-    WebkitBackdropFilter: 'blur(8px)',
+    position: 'fixed', top: '1.5rem', left: '1.5rem', zIndex: 10,
+    display: 'flex', alignItems: 'center', gap: '8px',
+    background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.3)',
+    borderRadius: 10, padding: '8px 16px', cursor: 'pointer', color: '#a78bfa',
+    fontSize: '0.78rem', fontWeight: 600, fontFamily: "'DM Sans', 'Segoe UI', sans-serif",
+    letterSpacing: '0.04em', transition: 'all 0.2s ease',
+    backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
   },
   backBtnHover: {
-    background: 'rgba(124,58,237,0.25)',
-    border: '1px solid rgba(167,139,250,0.5)',
-    transform: 'translateX(-2px)',
-    boxShadow: '0 0 16px rgba(124,58,237,0.25)',
+    background: 'rgba(124,58,237,0.25)', border: '1px solid rgba(167,139,250,0.5)',
+    transform: 'translateX(-2px)', boxShadow: '0 0 16px rgba(124,58,237,0.25)',
   },
-
   blob1: { position:'fixed', width:700, height:700, borderRadius:'50%', background:'radial-gradient(circle,rgba(109,40,217,0.25),transparent 65%)', top:-200, left:-200, animation:'blobDrift 15s ease-in-out infinite', pointerEvents:'none', zIndex:0 },
   blob2: { position:'fixed', width:600, height:600, borderRadius:'50%', background:'radial-gradient(circle,rgba(6,182,212,0.12),transparent 65%)', bottom:-180, right:-180, animation:'blobDrift 18s ease-in-out infinite reverse', pointerEvents:'none', zIndex:0 },
   blob3: { position:'fixed', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle,rgba(236,72,153,0.1),transparent 65%)', top:'40%', left:'40%', animation:'blobDrift 12s ease-in-out infinite 3s', pointerEvents:'none', zIndex:0 },
   ring1: { position:'fixed', width:700, height:700, borderRadius:'50%', border:'1px solid rgba(130,80,255,0.07)', top:'50%', left:'50%', transform:'translate(-50%,-50%)', animation:'ringPulse 6s ease-in-out infinite', pointerEvents:'none', zIndex:0 },
   ring2: { position:'fixed', width:500, height:500, borderRadius:'50%', border:'1px solid rgba(80,200,255,0.06)', top:'50%', left:'50%', transform:'translate(-50%,-50%)', animation:'ringPulse 6s ease-in-out infinite 2s', pointerEvents:'none', zIndex:0 },
   ring3: { position:'fixed', width:300, height:300, borderRadius:'50%', border:'1px solid rgba(200,80,255,0.05)', top:'50%', left:'50%', transform:'translate(-50%,-50%)', animation:'ringPulse 6s ease-in-out infinite 4s', pointerEvents:'none', zIndex:0 },
-
   card: {
     display:'flex', width:'100%', maxWidth:860, minHeight:560,
     borderRadius:24, overflow:'hidden', position:'relative', zIndex:1,
@@ -420,7 +389,6 @@ const s = {
     background:'linear-gradient(90deg, transparent, rgba(180,130,255,0.6), rgba(80,220,255,0.6), transparent)',
     animation:'shimmer 3s linear infinite', zIndex:10, pointerEvents:'none',
   },
-
   left: {
     width:280, flexShrink:0, padding:'2rem 1.75rem',
     background:'linear-gradient(160deg,#1a0a3a 0%,#0f0525 50%,#0a0218 100%)',
@@ -429,12 +397,7 @@ const s = {
   },
   leftGlow: { position:'absolute', top:-60, left:-60, width:250, height:250, borderRadius:'50%', background:'radial-gradient(circle,rgba(120,60,255,0.35),transparent 70%)', pointerEvents:'none' },
   logoRow: { display:'flex', alignItems:'center', gap:'0.6rem', flexWrap:'wrap' },
-  logoHex: {
-    width:38, height:38, borderRadius:10,
-    background:'linear-gradient(135deg,#7c3aed,#6d28d9)',
-    display:'flex', alignItems:'center', justifyContent:'center',
-    boxShadow:'0 0 20px rgba(124,58,237,0.5)',
-  },
+  logoHex: { width:38, height:38, borderRadius:10, background:'linear-gradient(135deg,#7c3aed,#6d28d9)', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 0 20px rgba(124,58,237,0.5)' },
   logoText: { color:'#e2d9f3', fontWeight:800, fontSize:'1rem', letterSpacing:'0.12em' },
   logoBadge: { fontSize:'0.55rem', letterSpacing:'0.15em', color:'#7c3aed', background:'rgba(124,58,237,0.15)', border:'1px solid rgba(124,58,237,0.3)', padding:'2px 7px', borderRadius:4, fontWeight:600 },
   titleTag: { fontSize:'0.6rem', letterSpacing:'0.2em', color:'#6d28d9', fontWeight:600, marginBottom:'0.5rem' },
@@ -451,24 +414,20 @@ const s = {
   statVal: { color:'#a78bfa', fontSize:'0.85rem', fontWeight:700 },
   statLabel: { color:'rgba(255,255,255,0.3)', fontSize:'0.62rem', marginTop:2 },
   leftFooter: { color:'rgba(255,255,255,0.2)', fontSize:'0.65rem', marginTop:'auto', paddingTop:'1rem' },
-
   right: { flex:1, background:'#0d0d1f', display:'flex', alignItems:'center', justifyContent:'center', padding:'2.5rem 2rem', position:'relative' },
   rightInner: { width:'100%', maxWidth:320 },
   welcomeTag: { display:'flex', alignItems:'center', gap:'0.4rem', fontSize:'0.58rem', letterSpacing:'0.2em', color:'#7c3aed', fontWeight:600, marginBottom:'0.6rem' },
   tagDot: { width:6, height:6, borderRadius:'50%', background:'#7c3aed', boxShadow:'0 0 8px #7c3aed', display:'inline-block', animation:'tagBlink 1.5s ease-in-out infinite' },
   welcomeTitle: { color:'#f0eeff', fontSize:'1.5rem', fontWeight:800, letterSpacing:'-0.03em', display:'flex', alignItems:'center', gap:'0.4rem' },
   welcomeSub: { color:'rgba(255,255,255,0.35)', fontSize:'0.8rem', marginTop:'0.25rem' },
-
   tabs: { display:'flex', background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)', borderRadius:12, padding:4, gap:4, marginBottom:'1.2rem' },
   tab: { flex:1, padding:'0.5rem', border:'none', borderRadius:9, cursor:'pointer', fontSize:'0.8rem', fontWeight:600, display:'flex', alignItems:'center', justifyContent:'center', gap:'0.4rem', transition:'all 0.25s', position:'relative', overflow:'hidden' },
   tabOn: { background:'linear-gradient(135deg,rgba(124,58,237,0.5),rgba(109,40,217,0.4))', color:'#e2d9f3', boxShadow:'0 2px 12px rgba(124,58,237,0.35), inset 0 1px 0 rgba(255,255,255,0.1)', border:'1px solid rgba(124,58,237,0.4)' },
   tabOff: { background:'transparent', color:'rgba(255,255,255,0.35)', border:'1px solid transparent' },
   tabIndicator: { position:'absolute', bottom:0, left:'20%', right:'20%', height:2, background:'linear-gradient(90deg,transparent,#a78bfa,transparent)', borderRadius:1 },
-
   alert: { display:'flex', alignItems:'center', gap:'0.5rem', borderRadius:10, padding:'0.65rem 0.85rem', marginBottom:'0.9rem', fontSize:'0.78rem', fontWeight:500 },
   alertError: { background:'rgba(239,68,68,0.07)', color:'#f87171', border:'1px solid rgba(239,68,68,0.2)' },
   alertSuccess: { background:'rgba(16,185,129,0.07)', color:'#34d399', border:'1px solid rgba(16,185,129,0.2)' },
-
   fieldLabel: { color:'rgba(255,255,255,0.4)', fontSize:'0.72rem', fontWeight:500, letterSpacing:'0.05em' },
   inputWrap: { position:'relative', borderRadius:11, border:'1.5px solid rgba(255,255,255,0.07)', background:'rgba(255,255,255,0.03)', transition:'all 0.25s', overflow:'hidden' },
   inputWrapFocused: { border:'1.5px solid rgba(124,58,237,0.6)', background:'rgba(124,58,237,0.06)', boxShadow:'0 0 0 3px rgba(124,58,237,0.12), 0 0 20px rgba(124,58,237,0.08)' },
@@ -476,7 +435,6 @@ const s = {
   input: { width:'100%', boxSizing:'border-box', padding:'0.72rem 0.85rem 0.72rem 2.5rem', background:'transparent', border:'none', outline:'none', color:'#f0eeff', fontSize:'0.88rem', fontFamily:'inherit' },
   inputBeam: { position:'absolute', bottom:0, left:0, right:0, height:2, background:'linear-gradient(90deg,transparent,#a78bfa,#38bdf8,transparent)', animation:'beamSlide 1.5s linear infinite' },
   eyeBtn: { position:'absolute', right:'0.8rem', top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', padding:0, display:'flex', alignItems:'center', color:'rgba(255,255,255,0.35)' },
-
   submitBtn: {
     width:'100%', padding:'0.8rem',
     background:'linear-gradient(135deg,#7c3aed 0%,#6d28d9 50%,#5b21b6 100%)',
@@ -487,11 +445,9 @@ const s = {
     transition:'transform 0.15s, box-shadow 0.15s',
   },
   btnGlow: { position:'absolute', inset:0, background:'linear-gradient(135deg,rgba(255,255,255,0.08),transparent)', pointerEvents:'none' },
-
   switchRow: { display:'flex', alignItems:'center', gap:'0.75rem', marginTop:'1.3rem' },
   switchLine: { flex:1, height:1, background:'rgba(255,255,255,0.06)' },
   switchBtn: { background:'none', border:'none', color:'#7c3aed', fontSize:'0.75rem', cursor:'pointer', fontWeight:600, letterSpacing:'0.02em', whiteSpace:'nowrap', padding:0 },
-
   verifying: { display:'flex', flexDirection:'column', alignItems:'center', padding:'1.5rem 0' },
   verifyOrb: { position:'relative', width:80, height:80, display:'flex', alignItems:'center', justifyContent:'center' },
   verifyRing1: { position:'absolute', inset:0, borderRadius:'50%', border:'1.5px solid rgba(167,139,250,0.4)', animation:'verifyPulse 1.5s ease-out infinite' },
@@ -520,6 +476,11 @@ const css = `
   button { transition: transform 0.15s, opacity 0.15s; }
   button:hover:not(:disabled) { transform: translateY(-1px); }
   button:active:not(:disabled) { transform: translateY(0); }
+
+  /* Mobile Responsive */
+  @media (max-width: 640px) {
+    .login-card { flex-direction: column !important; }
+  }
 `;
 
 export default FaceLogin;
