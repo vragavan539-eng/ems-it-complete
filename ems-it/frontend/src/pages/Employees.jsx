@@ -68,7 +68,7 @@ export default function Employees() {
       bloodGroup: emp.bloodGroup || '',
       joiningDate: emp.joiningDate ? emp.joiningDate.split('T')[0] : '',
     });
-    setEditId(emp._id); setShow(true); setErr('');
+    setEditId(emp._id); setShow(true); setErr(''); setShowPass(false);
   };
 
   const openFaceRegister = (emp) => {
@@ -126,7 +126,7 @@ export default function Employees() {
   return (
     <div>
       <PageHeader title="👥 Employees" subtitle={`${filtered.length} employees`}
-        action={isAdmin && <Btn onClick={() => { setShow(true); setForm(EMPTY); setEditId(null); setErr(''); }}>+ Add Employee</Btn>} />
+        action={isAdmin && <Btn onClick={() => { setShow(true); setForm(EMPTY); setEditId(null); setErr(''); setShowPass(false); }}>+ Add Employee</Btn>} />
 
       <div style={{ background: '#fff', borderRadius: 12, padding: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.07)', marginBottom: 16 }}>
         <input style={{ padding: '8px 14px', border: '1px solid #e2e8f0', borderRadius: 8, fontSize: 13, width: 300 }}
@@ -138,7 +138,7 @@ export default function Employees() {
       </div>
 
       {/* Add/Edit Modal */}
-      <Modal show={show} onClose={() => setShow(false)} title={editId ? 'Edit Employee' : 'Add Employee'} width={620}>
+      <Modal show={show} onClose={() => { setShow(false); setShowPass(false); }} title={editId ? 'Edit Employee' : 'Add Employee'} width={620}>
         {err && (
           <div style={{ background: '#fef2f2', color: '#dc2626', padding: '8px 12px', borderRadius: 8, fontSize: 13, marginBottom: 12 }}>
             ⚠️ {err}
@@ -146,47 +146,52 @@ export default function Employees() {
         )}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
 
-          {/* Name + Email */}
+          {/* Name */}
           <Input label="Full Name *" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} placeholder="John Doe" />
+
+          {/* Email */}
           <Input label="Email *" required type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="john@company.com" />
 
-          {/* Password - Full Width - TOP POSITION */}
-          <div style={{ gridColumn: 'span 2', background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 10, padding: '12px 14px' }}>
-            <label style={{ fontSize: 12, fontWeight: 700, color: '#166534', display: 'block', marginBottom: 6 }}>
-              🔑 {editId ? 'New Password' : 'Password *'}
-              {editId && <span style={{ fontWeight: 400, color: '#4ade80', fontSize: 11, marginLeft: 6 }}>(விட்டால் மாறாது)</span>}
+          {/* Password - Full Width */}
+          <div style={{ gridColumn: 'span 2', background: '#f0fdf4', border: '2px solid #86efac', borderRadius: 10, padding: '12px 14px' }}>
+            <label style={{ fontSize: 13, fontWeight: 700, color: '#166534', display: 'block', marginBottom: 8 }}>
+              🔑 {editId ? 'New Password (மாத்தணும்னா மட்டும் type பண்ணுங்க)' : 'Password *'}
             </label>
             <div style={{ position: 'relative' }}>
               <input
                 type={showPass ? 'text' : 'password'}
                 value={form.password}
                 onChange={e => setForm({...form, password: e.target.value})}
-                placeholder={editId ? 'புதிய password (optional)' : 'Employee login password *'}
+                placeholder={editId ? 'புதிய password type பண்ணுங்க (optional)' : 'Employee login password *'}
                 style={{
-                  width: '100%', boxSizing: 'border-box',
-                  padding: '9px 42px 9px 12px',
-                  border: '1px solid #86efac', borderRadius: 8,
-                  fontSize: 13, outline: 'none', background: '#fff'
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  padding: '10px 44px 10px 12px',
+                  border: '1px solid #86efac',
+                  borderRadius: 8,
+                  fontSize: 14,
+                  outline: 'none',
+                  background: '#fff',
                 }}
               />
               <button
                 type="button"
-                onClick={() => setShowPass(!showPass)}
+                onClick={() => setShowPass(v => !v)}
                 style={{
                   position: 'absolute', right: 10, top: '50%',
                   transform: 'translateY(-50%)',
                   background: 'none', border: 'none',
-                  cursor: 'pointer', fontSize: 16
+                  cursor: 'pointer', fontSize: 18, lineHeight: 1,
                 }}
               >
                 {showPass ? '🙈' : '👁️'}
               </button>
             </div>
-            {!editId && (
-              <p style={{ fontSize: 11, color: '#16a34a', marginTop: 5 }}>
-                💡 Employee இந்த email + password-லயே login பண்ணலாம்
-              </p>
-            )}
+            <p style={{ fontSize: 11, color: '#16a34a', marginTop: 6, marginBottom: 0 }}>
+              {editId
+                ? '💡 விட்டால் password மாறாது — மாத்தணும்னா மட்டும் type பண்ணுங்க'
+                : '💡 Employee இந்த email + password-லயே login பண்ணலாம்'}
+            </p>
           </div>
 
           {/* Phone + Designation */}
@@ -227,8 +232,8 @@ export default function Employees() {
 
         </div>
         <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'flex-end' }}>
-          <Btn variant="ghost" onClick={() => setShow(false)}>Cancel</Btn>
-          <Btn onClick={save}>{editId ? 'Update' : 'Save Employee'}</Btn>
+          <Btn variant="ghost" onClick={() => { setShow(false); setShowPass(false); }}>Cancel</Btn>
+          <Btn onClick={save}>{editId ? 'Update Employee' : 'Save Employee'}</Btn>
         </div>
       </Modal>
 
