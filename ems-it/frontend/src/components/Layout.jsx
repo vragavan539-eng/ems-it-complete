@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const NAV_ALL = [
   { to: '/dashboard',               icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="18" height="18"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>, label: 'Dashboard' },
@@ -44,10 +44,26 @@ const IcoWave = ({ c = 'currentColor', s = 16 }) => (
   </svg>
 );
 
+const HamburgerIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="22" height="22">
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+);
+
 export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handle = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handle);
+    return () => window.removeEventListener('resize', handle);
+  }, []);
 
   const isAdmin = user?.role === 'admin' || user?.role === 'hr';
   const NAV = NAV_ALL.filter(n => {
@@ -57,74 +73,131 @@ export default function Layout() {
   });
 
   const handleLogout = () => { logout(); navigate('/'); };
+  const closeMobile = () => setMobileOpen(false);
 
-  return (
-    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
-      <aside style={{ ...s.sidebar, width: collapsed ? 64 : 240 }}>
-        <div style={s.logo}>
-          <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <IcoBolt c="#fff" s={15} />
-          </div>
-          {!collapsed && <span style={s.logoText}>TechEMS</span>}
+  const SidebarContent = () => (
+    <>
+      <div style={s.logo}>
+        <div style={{ width: 28, height: 28, borderRadius: 8, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <IcoBolt c="#fff" s={15} />
+        </div>
+        {(!collapsed || isMobile) && <span style={s.logoText}>TechEMS</span>}
+        {!isMobile && (
           <button style={s.collapseBtn} onClick={() => setCollapsed(!collapsed)}>
             {collapsed
               ? <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><polyline points="9 18 15 12 9 6"/></svg>
               : <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16"><polyline points="15 18 9 12 15 6"/></svg>
             }
           </button>
-        </div>
-
-        <nav style={s.nav}>
-          {NAV.map(({ to, icon, label }) => (
-            <NavLink
-              key={to} to={to} end={to === '/dashboard'}
-              style={({ isActive }) => ({ ...s.navItem, ...(isActive ? s.navActive : {}) })}
-            >
-              <span style={{ display: 'flex', alignItems: 'center', minWidth: 22, justifyContent: 'center' }}>{icon}</span>
-              {!collapsed && <span style={s.navLabel}>{label}</span>}
-            </NavLink>
-          ))}
-        </nav>
-
-        <div style={{ borderTop: '1px solid #1e293b' }}>
-          <NavLink to="/dashboard/profile" style={({ isActive }) => ({ ...s.navItem, margin: '4px 8px', ...(isActive ? s.navActive : {}) })}>
-            <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#6366f1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
-              {user?.name?.[0]?.toUpperCase()}
-            </div>
-            {!collapsed && (
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ color: '#f1f5f9', fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</div>
-                <div style={{ color: '#64748b', fontSize: 10, textTransform: 'capitalize' }}>{user?.role} · View Profile</div>
-              </div>
-            )}
-          </NavLink>
-
-          <button onClick={handleLogout}
-            style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 14px', background: 'none', border: 'none', color: '#64748b', fontSize: 13, cursor: 'pointer', width: '100%', marginBottom: 8 }}>
-            <span style={{ display: 'flex', alignItems: 'center', minWidth: 22, justifyContent: 'center' }}>
-              <IcoLogout c="#64748b" s={16} />
-            </span>
-            {!collapsed && <span>Logout</span>}
+        )}
+        {isMobile && (
+          <button style={{ ...s.collapseBtn, marginLeft: 'auto' }} onClick={closeMobile}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
-        </div>
-      </aside>
+        )}
+      </div>
 
-      <main style={s.main}>
+      <nav style={s.nav}>
+        {NAV.map(({ to, icon, label }) => (
+          <NavLink
+            key={to} to={to} end={to === '/dashboard'}
+            onClick={isMobile ? closeMobile : undefined}
+            style={({ isActive }) => ({ ...s.navItem, ...(isActive ? s.navActive : {}) })}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', minWidth: 22, justifyContent: 'center' }}>{icon}</span>
+            {(!collapsed || isMobile) && <span style={s.navLabel}>{label}</span>}
+          </NavLink>
+        ))}
+      </nav>
+
+      <div style={{ borderTop: '1px solid #1e293b' }}>
+        <NavLink
+          to="/dashboard/profile"
+          onClick={isMobile ? closeMobile : undefined}
+          style={({ isActive }) => ({ ...s.navItem, margin: '4px 8px', ...(isActive ? s.navActive : {}) })}
+        >
+          <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#6366f1', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 12, flexShrink: 0 }}>
+            {user?.name?.[0]?.toUpperCase()}
+          </div>
+          {(!collapsed || isMobile) && (
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ color: '#f1f5f9', fontSize: 12, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</div>
+              <div style={{ color: '#64748b', fontSize: 10, textTransform: 'capitalize' }}>{user?.role} · View Profile</div>
+            </div>
+          )}
+        </NavLink>
+
+        <button onClick={handleLogout}
+          style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 14px', background: 'none', border: 'none', color: '#64748b', fontSize: 13, cursor: 'pointer', width: '100%', marginBottom: 8 }}>
+          <span style={{ display: 'flex', alignItems: 'center', minWidth: 22, justifyContent: 'center' }}>
+            <IcoLogout c="#64748b" s={16} />
+          </span>
+          {(!collapsed || isMobile) && <span>Logout</span>}
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <div style={{ display: 'flex', height: '100vh', overflow: 'hidden' }}>
+
+      {/* Mobile overlay */}
+      {isMobile && mobileOpen && (
+        <div
+          onClick={closeMobile}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 998 }}
+        />
+      )}
+
+      {/* Sidebar — desktop */}
+      {!isMobile && (
+        <aside style={{ ...s.sidebar, width: collapsed ? 64 : 240 }}>
+          <SidebarContent />
+        </aside>
+      )}
+
+      {/* Sidebar — mobile drawer */}
+      {isMobile && (
+        <aside style={{
+          ...s.sidebar,
+          width: 260,
+          position: 'fixed',
+          top: 0, left: 0, bottom: 0,
+          zIndex: 999,
+          transform: mobileOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.25s ease',
+        }}>
+          <SidebarContent />
+        </aside>
+      )}
+
+      {/* Main content */}
+      <main style={{ ...s.main, width: isMobile ? '100%' : undefined }}>
         <div style={s.topbar}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, color: '#1e293b', fontWeight: 600, fontSize: 15 }}>
-            Welcome back, {user?.name}
-            <span style={{ display: 'flex', alignItems: 'center' }}><IcoWave c="#f59e0b" s={18} /></span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {isMobile && (
+              <button
+                onClick={() => setMobileOpen(true)}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#1e293b', padding: 4 }}
+              >
+                <HamburgerIcon />
+              </button>
+            )}
+            <div style={{ color: '#1e293b', fontWeight: 600, fontSize: isMobile ? 13 : 15, display: 'flex', alignItems: 'center', gap: 6 }}>
+              {isMobile ? user?.name : `Welcome back, ${user?.name}`}
+              <IcoWave c="#f59e0b" s={16} />
+            </div>
           </div>
           <div style={s.topbarRight}>
             <span style={s.roleBadge}>{user?.role?.toUpperCase()}</span>
-            <NavLink to="/dashboard/profile" style={{ textDecoration: 'none' }}>
+            <NavLink to="/dashboard/profile" style={{ textDecoration: 'none' }} onClick={isMobile ? closeMobile : undefined}>
               <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
                 {user?.name?.[0]?.toUpperCase()}
               </div>
             </NavLink>
           </div>
         </div>
-        <div style={s.content}>
+        <div style={{ ...s.content, padding: isMobile ? '16px' : '24px' }}>
           <Outlet />
         </div>
       </main>
@@ -133,7 +206,7 @@ export default function Layout() {
 }
 
 const s = {
-  sidebar:     { background: '#0f172a', display: 'flex', flexDirection: 'column', transition: 'width 0.2s', overflow: 'hidden', flexShrink: 0 },
+  sidebar:     { background: '#0f172a', display: 'flex', flexDirection: 'column', overflow: 'hidden', flexShrink: 0 },
   logo:        { display: 'flex', alignItems: 'center', gap: 10, padding: '18px 14px', borderBottom: '1px solid #1e293b' },
   logoText:    { color: '#f1f5f9', fontWeight: 800, fontSize: 18, flex: 1 },
   collapseBtn: { background: 'none', border: 'none', color: '#64748b', display: 'flex', alignItems: 'center', marginLeft: 'auto', cursor: 'pointer', padding: 4 },
@@ -142,8 +215,8 @@ const s = {
   navActive:   { background: '#6366f1', color: '#fff' },
   navLabel:    { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   main:        { flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' },
-  topbar:      { background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '12px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 },
-  topbarRight: { display: 'flex', gap: 12, alignItems: 'center' },
+  topbar:      { background: '#fff', borderBottom: '1px solid #e2e8f0', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 },
+  topbarRight: { display: 'flex', gap: 10, alignItems: 'center' },
   roleBadge:   { background: '#ede9fe', color: '#6366f1', padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700 },
-  content:     { flex: 1, overflowY: 'auto', padding: '24px' },
+  content:     { flex: 1, overflowY: 'auto' },
 };
