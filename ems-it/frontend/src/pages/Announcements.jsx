@@ -7,7 +7,7 @@ const TYPE_COLORS = { general:'#6366f1', holiday:'#22c55e', policy:'#3b82f6', ev
 
 export default function Announcements() {
   const { isAdmin, isHR } = useAuth();
-  const canManage = isAdmin || isHR; // ✅ Admin/HR மட்டும் manage செய்யலாம்
+  const canManage = isAdmin || isHR; 
 
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -47,7 +47,7 @@ export default function Announcements() {
         title="📢 Announcements"
         subtitle="Company-wide communications"
         action={
-          // ✅ "New Announcement" button: Admin/HR மட்டும்
+          
           canManage ? (
             <Btn onClick={() => {
               setShow(true);
@@ -76,7 +76,7 @@ export default function Announcements() {
                 <Badge label={a.priority} color={{ low:'#22c55e', medium:'#f59e0b', high:'#ef4444' }[a.priority]} />
               </div>
 
-              {/* ✅ Edit/Delete buttons: Admin/HR மட்டும் */}
+            
               {canManage && (
                 <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
                   <Btn size="sm" variant="outline" onClick={() => {
@@ -96,7 +96,7 @@ export default function Announcements() {
         ))}
       </div>
 
-      {/* ✅ New/Edit Modal: Admin/HR மட்டும் */}
+  
       {canManage && (
         <Modal show={show} onClose={() => setShow(false)} title={editId ? 'Edit Announcement' : 'New Announcement'} width={560}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
