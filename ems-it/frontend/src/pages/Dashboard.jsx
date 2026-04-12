@@ -11,7 +11,7 @@ export default function Dashboard() {
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin' || user?.role === 'hr';
   const [data, setData] = useState(null);
-  const [payroll, setPayroll] = useState([]); // ✅ fix
+  const [payroll, setPayroll] = useState([]); 
 
   useEffect(() => {
     api.get('/reports/dashboard').then(setData);
