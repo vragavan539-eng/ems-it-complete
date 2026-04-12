@@ -8,8 +8,8 @@ import Employees from './pages/Employees';
 import Departments from './pages/Departments';
 import Payroll from './pages/Payroll';
 import Leave from './pages/Leave';
-import AdminAttendance from './pages/Attendance';        // ✅ Admin: list view
-import FaceAttendance from './pages/faceAttendance';     // ✅ Employee: face scan
+import AdminAttendance from './pages/Attendance';        
+import FaceAttendance from './pages/faceAttendance';     
 import Performance from './pages/Performance';
 import Projects from './pages/Projects';
 import Assets from './pages/Assets';
@@ -27,7 +27,7 @@ const PrivateRoute = ({ children }) => {
   return user ? children : <Navigate to="/login" replace />;
 };
 
-// ✅ Role based attendance — admin/hr → list view, employee/manager → face scan
+
 const AttendancePage = () => {
   const { user } = useAuth();
   if (user?.role === 'admin' || user?.role === 'hr') {
@@ -55,7 +55,7 @@ export default function App() {
             <Route path="roles" element={<Roles />} />
             <Route path="payroll" element={<Payroll />} />
             <Route path="leave" element={<Leave />} />
-            <Route path="attendance" element={<AttendancePage />} />  {/* ✅ Role based */}
+            <Route path="attendance" element={<AttendancePage />} />  
             <Route path="performance" element={<Performance />} />
             <Route path="projects" element={<Projects />} />
             <Route path="assets" element={<Assets />} />
